@@ -22,7 +22,10 @@ class HomeScreen extends StatelessWidget {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(dialogContext).pop(),
-              child: const Text('Cancel', style: TextStyle(color: Color(0xFF64748B))),
+              child: const Text(
+                'Cancel',
+                style: TextStyle(color: Color(0xFF64748B)),
+              ),
             ),
             TextButton(
               onPressed: () {
@@ -31,7 +34,10 @@ class HomeScreen extends StatelessWidget {
               },
               child: const Text(
                 'Logout',
-                style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  color: Colors.red,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ],
@@ -75,10 +81,7 @@ class HomeScreen extends StatelessWidget {
             gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
-              colors: [
-                Color(0xFFF8FAFC),
-                Color(0xFFF1F5F9),
-              ],
+              colors: [Color(0xFFF8FAFC), Color(0xFFF1F5F9)],
             ),
           ),
           child: SafeArea(
@@ -87,14 +90,18 @@ class HomeScreen extends StatelessWidget {
                 if (state is AuthLoading) {
                   return const Center(
                     child: CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF0F766E)),
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        Color(0xFF0F766E),
+                      ),
                     ),
                   );
                 }
 
                 if (state is Authenticated) {
                   final user = state.user;
-                  final initial = user.email.isNotEmpty ? user.email[0].toUpperCase() : '?';
+                  final initial = user.email.isNotEmpty
+                      ? user.email[0].toUpperCase()
+                      : '?';
 
                   return Padding(
                     padding: const EdgeInsets.all(24.0),
@@ -120,7 +127,10 @@ class HomeScreen extends StatelessWidget {
                                   decoration: const BoxDecoration(
                                     shape: BoxShape.circle,
                                     gradient: LinearGradient(
-                                      colors: [Color(0xFF0F766E), Color(0xFF2DD4BF)],
+                                      colors: [
+                                        Color(0xFF0F766E),
+                                        Color(0xFF2DD4BF),
+                                      ],
                                       begin: Alignment.topLeft,
                                       end: Alignment.bottomRight,
                                     ),
@@ -165,7 +175,7 @@ class HomeScreen extends StatelessWidget {
                                       color: Color(0xFF64748B),
                                       size: 20,
                                     ),
-                                    const SizedBox(width: 8),
+                                    const SizedBox(width: 7),
                                     Text(
                                       'User ID: ${user.id}',
                                       style: TextStyle(
