@@ -16,20 +16,19 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   AuthBloc({
     required this.loginUseCase,
-    required this.registerUseCase,
+
+    /// Injecting LoginUseCase
+    required this.registerUseCase, // Injecting RegisterUseCase
     required this.getMeUseCase,
     required this.logoutUseCase,
   }) : super(AuthInitial()) {
     on<AppStarted>(_onAppStarted);
     on<LoginRequested>(_onLoginRequested);
     on<RegisterRequested>(_onRegisterRequested);
-    on<LogoutRequested>(_onLogoutRequested);
+    on<LogoutRequested>(_onLogoutRequested); // Listen for logout events
   }
 
-  Future<void> _onAppStarted(
-    AppStarted event,
-    Emitter<AuthState> emit,
-  ) async {
+  Future<void> _onAppStarted(AppStarted event, Emitter<AuthState> emit) async {
     emit(AuthLoading());
     final result = await getMeUseCase(const NoParams());
     result.fold(

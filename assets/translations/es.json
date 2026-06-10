@@ -1,0 +1,59 @@
+{
+  "onboarding": {
+    "slide1_title": "Seguro y Privado",
+    "slide1_desc": "Sus credenciales se cifran y almacenan de forma segura. Disfrute de un inicio de sesión moderno con GraphQL.",
+    "slide2_title": "Arquitectura Limpia",
+    "slide2_desc": "Construido con capas de datos, dominio y presentación desacopladas para una extrema confiabilidad y capacidad de prueba.",
+    "slide3_title": "Listo para el Mundo",
+    "slide3_desc": "Soporta múltiples idiomas a través de Easy Localization y maneja errores de red sin problemas.",
+    "next": "Siguiente",
+    "skip": "Omitir",
+    "get_started": "Comenzar"
+  },
+  "auth": {
+    "welcome_back": "Bienvenido de nuevo",
+    "login_to_access": "Inicie sesión para acceder a su cuenta",
+    "email_label": "Dirección de correo electrónico",
+    "password_label": "Contraseña",
+    "confirm_password_label": "Confirmar contraseña",
+    "login_btn": "Iniciar Sesión",
+    "register_btn": "Registrarse",
+    "create_account": "Crear Cuenta",
+    "signup_to_get_started": "Regístrese para comenzar",
+    "dont_have_account": "¿No tiene una cuenta? ",
+    "already_have_account": "¿Ya tiene una cuenta? ",
+    "logout": "Cerrar Sesión",
+    "logout_dialog_title": "Cerrar Sesión",
+    "logout_dialog_content": "¿Está seguro de que desea cerrar la sesión?",
+    "cancel": "Cancelar",
+    "errors": {
+      "please_enter_email": "Por favor introduzca su correo electrónico",
+      "please_enter_valid_email": "Por favor introduzca un correo electrónico válido",
+      "please_enter_password": "Por favor introduzca su contraseña",
+      "password_too_short": "La contraseña debe tener al menos 6 caracteres",
+      "confirm_password_empty": "Por favor confirme su contraseña",
+      "passwords_dont_match": "Las contraseñas no coinciden"
+    }
+  },
+  "dashboard": {
+    "title": "Tablero Seguro",
+    "welcome_back": "¡Bienvenido de nuevo!",
+    "user_id": "ID de Usuario",
+    "session_expired": "Sesión expirada. Por favor inicie sesión de nuevo."
+  },
+  "dio_error": {
+    "simulator_title": "Simulador de Errores de Red Dio",
+    "simulator_desc": "Active fallos de prueba a continuación para probar el sistema de notificación de errores por lotes y ver el manejo del estado de Clean Architecture en acción.",
+    "trigger_timeout": "Activar error de tiempo de espera",
+    "trigger_404": "Activar error 404 No encontrado",
+    "trigger_500": "Activar error 500 Error interno",
+    "clear_errors": "Limpiar registros de errores",
+    "errors_pending": "⚠️ {} Errores de red",
+    "details_title": "Registros de errores de red",
+    "no_errors": "Aún no se han registrado errores de red.",
+    "timestamp": "Marca de tiempo",
+    "type": "Tipo",
+    "url": "URL de solicitud",
+    "message": "Mensaje"
+  }
+}

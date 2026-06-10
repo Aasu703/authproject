@@ -1,13 +1,18 @@
 // lib/main.dart
-import 'package:authproject/features/auth/presentation/screens/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:authproject/features/auth/presentation/screens/splash_screen.dart';
+import 'package:authproject/features/dio_error/presentation/bloc/dio_error_bloc.dart';
 import 'features/auth/presentation/bloc/auth_bloc.dart';
 import 'injection_container.dart' as di;
-import 'core/constants/app_constants.dart'; // ← Add this import
+import 'core/constants/app_constants.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize EasyLocalization
+  await EasyLocalization.ensureInitialized();
 
   // Initialize URLs first (very important)
   await AppConstants.initialize();
@@ -15,7 +20,14 @@ Future<void> main() async {
   // Then initialize dependencies
   await di.initDependencies();
 
-  runApp(const MyApp());
+  runApp(
+    EasyLocalization(
+      supportedLocales: const [Locale('en'), Locale('es')],
+      path: 'assets/translations',
+      fallbackLocale: const Locale('en'),
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -23,11 +35,17 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<AuthBloc>(
-      create: (_) => di.sl<AuthBloc>(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<AuthBloc>(create: (_) => di.sl<AuthBloc>()),
+        BlocProvider<DioErrorBloc>(create: (_) => di.sl<DioErrorBloc>()),
+      ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Auth Project',
+        localizationsDelegates: context.localizationDelegates,
+        supportedLocales: context.supportedLocales,
+        locale: context.locale,
         theme: ThemeData(
           useMaterial3: true,
           colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF0F766E)),

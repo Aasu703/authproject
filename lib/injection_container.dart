@@ -1,5 +1,6 @@
 // lib/injection_container.dart
 import 'package:authproject/core/network/graphql_client_factory.dart';
+import 'package:authproject/core/network/dio_client.dart';
 import 'package:authproject/core/services/token_service.dart';
 import 'package:authproject/features/auth/data/datasources/auth_remote_datasource.dart';
 import 'package:authproject/features/auth/data/repositories/auth_repository_impl.dart';
@@ -9,6 +10,7 @@ import 'package:authproject/features/auth/domain/usecases/login_usecase.dart';
 import 'package:authproject/features/auth/domain/usecases/logout_usecase.dart';
 import 'package:authproject/features/auth/domain/usecases/register_usecase.dart';
 import 'package:authproject/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:authproject/features/dio_error/presentation/bloc/dio_error_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -25,6 +27,10 @@ Future<void> initDependencies() async {
   sl.registerLazySingleton<GraphQLClient>(
     () => GraphQLClientFactory(sl<TokenService>()).create(),
   );
+
+  // Dio Error tracking
+  sl.registerLazySingleton<DioErrorBloc>(() => DioErrorBloc());
+  sl.registerLazySingleton<DioClient>(() => DioClient(sl<DioErrorBloc>()));
 
   sl.registerLazySingleton<AuthRemoteDataSource>(
     () => AuthRemoteDataSourceImpl(sl<GraphQLClient>()),

@@ -8,8 +8,9 @@ class AppConstants {
   static const String appName = 'Auth Project';
   static const String tokenKey = 'jwt_token';
 
-  static const String _localIp =
-      '192.168.2.125'; // ← Update this IP when needed
+  static const String _localIp = '192.168.2.125';
+
+  /// ----------------------> Replacing IP--------------------------------------------------<
   static const int _port = 3000;
 
   static Future<String> get _host async {
@@ -29,11 +30,10 @@ class AppConstants {
   }
 
   static late final String graphqlBaseUrl;
-  static late final String graphqlWsUrl;
 
   static Future<void> initialize() async {
     final host = await _host;
-    graphqlBaseUrl = 'http://$host:$_port/graphql';
-    graphqlWsUrl = 'ws://$host:$_port/graphql';
+    graphqlBaseUrl =
+        'https://swapi-graphql.netlify.app/.netlify/functions/index';
   }
 }

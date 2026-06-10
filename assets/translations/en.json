@@ -1,0 +1,59 @@
+{
+  "onboarding": {
+    "slide1_title": "Secure & Private",
+    "slide1_desc": "Your credentials are encrypted and stored safely. Enjoy modern secure login powered by GraphQL.",
+    "slide2_title": "Clean Architecture",
+    "slide2_desc": "Built with decoupled data, domain, and presentation layers for extreme reliability and testability.",
+    "slide3_title": "Global Ready",
+    "slide3_desc": "Supports multiple languages via Easy Localization and handles network errors seamlessly.",
+    "next": "Next",
+    "skip": "Skip",
+    "get_started": "Get Started"
+  },
+  "auth": {
+    "welcome_back": "Welcome Back",
+    "login_to_access": "Login to access your account",
+    "email_label": "Email Address",
+    "password_label": "Password",
+    "confirm_password_label": "Confirm Password",
+    "login_btn": "Login",
+    "register_btn": "Register",
+    "create_account": "Create Account",
+    "signup_to_get_started": "Sign up to get started",
+    "dont_have_account": "Don't have an account? ",
+    "already_have_account": "Already have an account? ",
+    "logout": "Log Out",
+    "logout_dialog_title": "Logout",
+    "logout_dialog_content": "Are you sure you want to log out?",
+    "cancel": "Cancel",
+    "errors": {
+      "please_enter_email": "Please enter your email",
+      "please_enter_valid_email": "Please enter a valid email address",
+      "please_enter_password": "Please enter your password",
+      "password_too_short": "Password must be at least 6 characters",
+      "confirm_password_empty": "Please confirm your password",
+      "passwords_dont_match": "Passwords do not match"
+    }
+  },
+  "dashboard": {
+    "title": "Secure Dashboard",
+    "welcome_back": "Welcome back!",
+    "user_id": "User ID",
+    "session_expired": "Session expired. Please log in again."
+  },
+  "dio_error": {
+    "simulator_title": "Dio Network Error Simulator",
+    "simulator_desc": "Trigger mock failures below to test the batch error notification system and see Clean Architecture state handling in action.",
+    "trigger_timeout": "Trigger Timeout Error",
+    "trigger_404": "Trigger 404 Not Found",
+    "trigger_500": "Trigger 500 Internal Error",
+    "clear_errors": "Clear Error Logs",
+    "errors_pending": "⚠️ {} Network Errors",
+    "details_title": "Network Error Logs",
+    "no_errors": "No network errors logged yet.",
+    "timestamp": "Timestamp",
+    "type": "Type",
+    "url": "Request URL",
+    "message": "Message"
+  }
+}

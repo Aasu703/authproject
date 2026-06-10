@@ -1,6 +1,9 @@
 // lib/features/auth/presentation/screens/splash_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:authproject/injection_container.dart' as di;
+import 'package:authproject/features/onboarding/presentation/screens/onboarding_screen.dart';
 import '../bloc/auth_bloc.dart';
 import '../bloc/auth_event.dart';
 import '../bloc/auth_state.dart';
@@ -31,9 +34,17 @@ class _SplashScreenState extends State<SplashScreen> {
             MaterialPageRoute(builder: (_) => const HomeScreen()),
           );
         } else if (state is Unauthenticated || state is AuthError) {
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (_) => const LoginScreen()),
-          );
+          final prefs = di.sl<SharedPreferences>();
+          final onboardingCompleted = prefs.getBool('onboarding_completed') ?? false;
+          if (onboardingCompleted) {
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (_) => const LoginScreen()),
+            );
+          } else {
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (_) => const OnboardingScreen()),
+            );
+          }
         }
       },
       child: Scaffold(
