@@ -2,9 +2,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:authproject/features/auth/presentation/screens/splash_screen.dart';
+import 'package:authproject/core/router/router.dart';
 import 'package:authproject/features/dio_error/presentation/bloc/dio_error_bloc.dart';
-import 'features/auth/presentation/bloc/auth_bloc.dart';
+import 'features/auth/presentation/bloc/auth_cubit.dart';
 import 'injection_container.dart' as di;
 import 'core/constants/app_constants.dart';
 
@@ -37,10 +37,10 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider<AuthBloc>(create: (_) => di.sl<AuthBloc>()),
+        BlocProvider<AuthCubit>(create: (_) => di.sl<AuthCubit>()),
         BlocProvider<DioErrorBloc>(create: (_) => di.sl<DioErrorBloc>()),
       ],
-      child: MaterialApp(
+      child: MaterialApp.router(
         debugShowCheckedModeBanner: false,
         title: 'Auth Project',
         localizationsDelegates: context.localizationDelegates,
@@ -51,7 +51,7 @@ class MyApp extends StatelessWidget {
           colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF0F766E)),
           scaffoldBackgroundColor: const Color(0xFFF8FAFC),
         ),
-        home: const SplashScreen(),
+        routerConfig: di.sl<AppRouter>().router,
       ),
     );
   }

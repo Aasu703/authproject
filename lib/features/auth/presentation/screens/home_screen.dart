@@ -3,15 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:dio/dio.dart';
+import 'package:go_router/go_router.dart';
 import 'package:authproject/injection_container.dart' as di;
 import 'package:authproject/core/network/dio_client.dart';
 import 'package:authproject/features/dio_error/presentation/widgets/dio_error_notification_badge.dart';
 import 'package:authproject/features/dio_error/presentation/bloc/dio_error_bloc.dart';
 import 'package:authproject/features/dio_error/presentation/bloc/dio_error_event.dart';
-import '../bloc/auth_bloc.dart';
-import '../bloc/auth_event.dart';
+import '../bloc/auth_cubit.dart';
 import '../bloc/auth_state.dart';
-import 'login_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -24,7 +23,10 @@ class HomeScreen extends StatelessWidget {
           backgroundColor: const Color(0xFF1E293B), // Dark slate dialog
           title: Text(
             tr('auth.logout_dialog_title'),
-            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
           ),
           content: Text(
             tr('auth.logout_dialog_content'),
@@ -45,7 +47,7 @@ class HomeScreen extends StatelessWidget {
             TextButton(
               onPressed: () {
                 Navigator.of(dialogContext).pop();
-                context.read<AuthBloc>().add(LogoutRequested());
+                context.read<AuthCubit>().logoutRequested();
               },
               child: Text(
                 tr('auth.logout'),
@@ -90,14 +92,9 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<AuthBloc, AuthState>(
+    return BlocListener<AuthCubit, AuthState>(
       listener: (context, state) {
-        if (state is Unauthenticated) {
-          Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (_) => const LoginScreen()),
-            (route) => false,
-          );
-        }
+        // Auth redirection is handled by GoRouter
       },
       child: Scaffold(
         extendBodyBehindAppBar: true,
@@ -125,8 +122,16 @@ class HomeScreen extends StatelessWidget {
                 child: DropdownButton<Locale>(
                   value: EasyLocalization.of(context)?.locale ?? context.locale,
                   dropdownColor: const Color(0xFF1E293B),
-                  icon: const Icon(Icons.keyboard_arrow_down_rounded, color: Colors.white70, size: 20),
-                  style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w600),
+                  icon: const Icon(
+                    Icons.keyboard_arrow_down_rounded,
+                    color: Colors.white70,
+                    size: 20,
+                  ),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                  ),
                   items: const [
                     DropdownMenuItem(
                       value: Locale('en'),
@@ -171,7 +176,7 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
             SafeArea(
-              child: BlocBuilder<AuthBloc, AuthState>(
+              child: BlocBuilder<AuthCubit, AuthState>(
                 builder: (context, state) {
                   if (state is AuthLoading) {
                     return const Center(
@@ -196,7 +201,10 @@ class HomeScreen extends StatelessWidget {
                         children: [
                           // Profile Info Card
                           Container(
-                            padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 20),
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 32,
+                              horizontal: 20,
+                            ),
                             decoration: BoxDecoration(
                               color: Colors.white.withOpacity(0.04),
                               borderRadius: BorderRadius.circular(24),
@@ -272,6 +280,19 @@ class HomeScreen extends StatelessWidget {
                                     ),
                                   ],
                                 ),
+                                const SizedBox(height: 20),
+                                ElevatedButton.icon(
+                                  onPressed: () => context.push('/items'),
+                                  icon: const Icon(Icons.list_alt_rounded),
+                                  label: const Text('View Paginated List'),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: const Color(0xFF2DD4BF),
+                                    foregroundColor: Colors.black,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                  ),
+                                ),
                               ],
                             ),
                           ),
@@ -325,13 +346,19 @@ class HomeScreen extends StatelessWidget {
                                   icon: const Icon(Icons.timer_off_outlined),
                                   label: Text(tr('dio_error.trigger_timeout')),
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.white.withOpacity(0.06),
+                                    backgroundColor: Colors.white.withOpacity(
+                                      0.06,
+                                    ),
                                     foregroundColor: Colors.white,
                                     elevation: 0,
-                                    padding: const EdgeInsets.symmetric(vertical: 14),
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 14,
+                                    ),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(12),
-                                      side: const BorderSide(color: Colors.white12),
+                                      side: const BorderSide(
+                                        color: Colors.white12,
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -341,13 +368,19 @@ class HomeScreen extends StatelessWidget {
                                   icon: const Icon(Icons.link_off_rounded),
                                   label: Text(tr('dio_error.trigger_404')),
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.white.withOpacity(0.06),
+                                    backgroundColor: Colors.white.withOpacity(
+                                      0.06,
+                                    ),
                                     foregroundColor: Colors.white,
                                     elevation: 0,
-                                    padding: const EdgeInsets.symmetric(vertical: 14),
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 14,
+                                    ),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(12),
-                                      side: const BorderSide(color: Colors.white12),
+                                      side: const BorderSide(
+                                        color: Colors.white12,
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -357,20 +390,28 @@ class HomeScreen extends StatelessWidget {
                                   icon: const Icon(Icons.cloud_off_rounded),
                                   label: Text(tr('dio_error.trigger_500')),
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.white.withOpacity(0.06),
+                                    backgroundColor: Colors.white.withOpacity(
+                                      0.06,
+                                    ),
                                     foregroundColor: Colors.white,
                                     elevation: 0,
-                                    padding: const EdgeInsets.symmetric(vertical: 14),
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 14,
+                                    ),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(12),
-                                      side: const BorderSide(color: Colors.white12),
+                                      side: const BorderSide(
+                                        color: Colors.white12,
+                                      ),
                                     ),
                                   ),
                                 ),
                                 const SizedBox(height: 16),
                                 // Clear logs button
                                 TextButton.icon(
-                                  onPressed: () => context.read<DioErrorBloc>().add(ClearDioErrors()),
+                                  onPressed: () => context
+                                      .read<DioErrorBloc>()
+                                      .add(ClearDioErrors()),
                                   icon: const Icon(Icons.clear_all_rounded),
                                   label: Text(tr('dio_error.clear_errors')),
                                   style: TextButton.styleFrom(

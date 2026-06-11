@@ -34,6 +34,6 @@ class AppConstants {
   static Future<void> initialize() async {
     final host = await _host;
     graphqlBaseUrl =
-        'https://swapi-graphql.netlify.app/.netlify/functions/index';
+        'http://$host:$_port/graphql'; // Example: 'http://localhost:3000/graphql'
   }
 }

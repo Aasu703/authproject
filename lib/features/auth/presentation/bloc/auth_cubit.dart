@@ -1,34 +1,26 @@
-// lib/features/auth/presentation/bloc/auth_bloc.dart
+// lib/features/auth/presentation/bloc/auth_cubit.dart
 import 'package:authproject/core/usecases/usecase.dart';
 import 'package:authproject/features/auth/domain/usecases/get_me_usecase.dart';
 import 'package:authproject/features/auth/domain/usecases/login_usecase.dart';
 import 'package:authproject/features/auth/domain/usecases/logout_usecase.dart';
 import 'package:authproject/features/auth/domain/usecases/register_usecase.dart';
-import 'package:authproject/features/auth/presentation/bloc/auth_event.dart';
 import 'package:authproject/features/auth/presentation/bloc/auth_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class AuthBloc extends Bloc<AuthEvent, AuthState> {
+class AuthCubit extends Cubit<AuthState> {
   final LoginUseCase loginUseCase;
   final RegisterUseCase registerUseCase;
   final GetMeUseCase getMeUseCase;
   final LogoutUseCase logoutUseCase;
 
-  AuthBloc({
+  AuthCubit({
     required this.loginUseCase,
-
-    /// Injecting LoginUseCase
-    required this.registerUseCase, // Injecting RegisterUseCase
+    required this.registerUseCase,
     required this.getMeUseCase,
     required this.logoutUseCase,
-  }) : super(AuthInitial()) {
-    on<AppStarted>(_onAppStarted);
-    on<LoginRequested>(_onLoginRequested);
-    on<RegisterRequested>(_onRegisterRequested);
-    on<LogoutRequested>(_onLogoutRequested); // Listen for logout events
-  }
+  }) : super(AuthInitial());
 
-  Future<void> _onAppStarted(AppStarted event, Emitter<AuthState> emit) async {
+  Future<void> appStarted() async {
     emit(AuthLoading());
     final result = await getMeUseCase(const NoParams());
     result.fold(
@@ -37,13 +29,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     );
   }
 
-  Future<void> _onLoginRequested(
-    LoginRequested event,
-    Emitter<AuthState> emit,
-  ) async {
+  Future<void> loginRequested({
+    required String email,
+    required String password,
+  }) async {
     emit(AuthLoading());
     final result = await loginUseCase(
-      LoginParams(email: event.email, passwordPlain: event.password),
+      LoginParams(email: email, passwordPlain: password),
     );
     result.fold(
       (failure) => emit(AuthError(failure.message)),
@@ -51,13 +43,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     );
   }
 
-  Future<void> _onRegisterRequested(
-    RegisterRequested event,
-    Emitter<AuthState> emit,
-  ) async {
+  Future<void> registerRequested({
+    required String email,
+    required String password,
+  }) async {
     emit(AuthLoading());
     final result = await registerUseCase(
-      RegisterParams(email: event.email, passwordPlain: event.password),
+      RegisterParams(email: email, passwordPlain: password),
     );
     result.fold(
       (failure) => emit(AuthError(failure.message)),
@@ -65,10 +57,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     );
   }
 
-  Future<void> _onLogoutRequested(
-    LogoutRequested event,
-    Emitter<AuthState> emit,
-  ) async {
+  Future<void> logoutRequested() async {
     emit(AuthLoading());
     await logoutUseCase(const NoParams());
     emit(Unauthenticated());

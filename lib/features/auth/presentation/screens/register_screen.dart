@@ -2,11 +2,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:go_router/go_router.dart';
 import 'package:authproject/features/dio_error/presentation/widgets/dio_error_notification_badge.dart';
-import '../bloc/auth_bloc.dart';
-import '../bloc/auth_event.dart';
+import '../bloc/auth_cubit.dart';
 import '../bloc/auth_state.dart';
-import 'home_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -33,25 +32,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   void _onRegisterSubmitted() {
     if (_formKey.currentState?.validate() ?? false) {
-      context.read<AuthBloc>().add(
-        RegisterRequested(
-          email: _emailController.text.trim(),
-          password: _passwordController.text,
-        ),
+      context.read<AuthCubit>().registerRequested(
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
       );
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<AuthBloc, AuthState>(
+    return BlocListener<AuthCubit, AuthState>(
       listener: (context, state) {
-        if (state is Authenticated) {
-          Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (_) => const HomeScreen()),
-            (route) => false,
-          );
-        } else if (state is AuthError) {
+        if (state is AuthError) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Row(
@@ -82,8 +74,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
           backgroundColor: Colors.transparent,
           elevation: 0,
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white),
-            onPressed: () => Navigator.of(context).pop(),
+            icon: const Icon(
+              Icons.arrow_back_ios_new_rounded,
+              color: Colors.white,
+            ),
+            onPressed: () => context.pop(),
           ),
         ),
         body: Stack(
@@ -117,7 +112,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.25),
+                          color: Colors.black.withValues(alpha: 0.25),
                           blurRadius: 30,
                           offset: const Offset(0, 10),
                         ),
@@ -133,10 +128,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             child: Container(
                               padding: const EdgeInsets.all(16),
                               decoration: BoxDecoration(
-                                color: const Color(0xFF2DD4BF).withOpacity(0.12),
+                                color: const Color(
+                                  0xFF2DD4BF,
+                                ).withOpacity(0.12),
                                 shape: BoxShape.circle,
                                 border: Border.all(
-                                  color: const Color(0xFF2DD4BF).withOpacity(0.25),
+                                  color: const Color(
+                                    0xFF2DD4BF,
+                                  ).withOpacity(0.25),
                                   width: 1.5,
                                 ),
                               ),
@@ -175,29 +174,45 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             style: const TextStyle(color: Colors.white),
                             decoration: InputDecoration(
                               labelText: tr('auth.email_label'),
-                              labelStyle: const TextStyle(color: Colors.white70),
-                              prefixIcon: const Icon(Icons.email_outlined, color: Colors.white70),
+                              labelStyle: const TextStyle(
+                                color: Colors.white70,
+                              ),
+                              prefixIcon: const Icon(
+                                Icons.email_outlined,
+                                color: Colors.white70,
+                              ),
                               filled: true,
                               fillColor: Colors.white.withOpacity(0.05),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(16),
-                                borderSide: BorderSide(color: Colors.white.withOpacity(0.15)),
+                                borderSide: BorderSide(
+                                  color: Colors.white.withOpacity(0.15),
+                                ),
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(16),
-                                borderSide: BorderSide(color: Colors.white.withOpacity(0.15)),
+                                borderSide: BorderSide(
+                                  color: Colors.white.withOpacity(0.15),
+                                ),
                               ),
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(16),
-                                borderSide: const BorderSide(color: Color(0xFF2DD4BF), width: 1.8),
+                                borderSide: const BorderSide(
+                                  color: Color(0xFF2DD4BF),
+                                  width: 1.8,
+                                ),
                               ),
                             ),
                             validator: (value) {
                               if (value == null || value.isEmpty) {
                                 return tr('auth.errors.please_enter_email');
                               }
-                              if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
-                                return tr('auth.errors.please_enter_valid_email');
+                              if (!RegExp(
+                                r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                              ).hasMatch(value)) {
+                                return tr(
+                                  'auth.errors.please_enter_valid_email',
+                                );
                               }
                               return null;
                             },
@@ -210,8 +225,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             style: const TextStyle(color: Colors.white),
                             decoration: InputDecoration(
                               labelText: tr('auth.password_label'),
-                              labelStyle: const TextStyle(color: Colors.white70),
-                              prefixIcon: const Icon(Icons.lock_outlined, color: Colors.white70),
+                              labelStyle: const TextStyle(
+                                color: Colors.white70,
+                              ),
+                              prefixIcon: const Icon(
+                                Icons.lock_outlined,
+                                color: Colors.white70,
+                              ),
                               suffixIcon: IconButton(
                                 icon: Icon(
                                   _obscurePassword
@@ -229,15 +249,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               fillColor: Colors.white.withOpacity(0.05),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(16),
-                                borderSide: BorderSide(color: Colors.white.withOpacity(0.15)),
+                                borderSide: BorderSide(
+                                  color: Colors.white.withOpacity(0.15),
+                                ),
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(16),
-                                borderSide: BorderSide(color: Colors.white.withOpacity(0.15)),
+                                borderSide: BorderSide(
+                                  color: Colors.white.withOpacity(0.15),
+                                ),
                               ),
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(16),
-                                borderSide: const BorderSide(color: Color(0xFF2DD4BF), width: 1.8),
+                                borderSide: const BorderSide(
+                                  color: Color(0xFF2DD4BF),
+                                  width: 1.8,
+                                ),
                               ),
                             ),
                             validator: (value) {
@@ -258,8 +285,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             style: const TextStyle(color: Colors.white),
                             decoration: InputDecoration(
                               labelText: tr('auth.confirm_password_label'),
-                              labelStyle: const TextStyle(color: Colors.white70),
-                              prefixIcon: const Icon(Icons.lock_outline_rounded, color: Colors.white70),
+                              labelStyle: const TextStyle(
+                                color: Colors.white70,
+                              ),
+                              prefixIcon: const Icon(
+                                Icons.lock_outline_rounded,
+                                color: Colors.white70,
+                              ),
                               suffixIcon: IconButton(
                                 icon: Icon(
                                   _obscureConfirmPassword
@@ -269,7 +301,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 ),
                                 onPressed: () {
                                   setState(() {
-                                    _obscureConfirmPassword = !_obscureConfirmPassword;
+                                    _obscureConfirmPassword =
+                                        !_obscureConfirmPassword;
                                   });
                                 },
                               ),
@@ -277,15 +310,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               fillColor: Colors.white.withOpacity(0.05),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(16),
-                                borderSide: BorderSide(color: Colors.white.withOpacity(0.15)),
+                                borderSide: BorderSide(
+                                  color: Colors.white.withOpacity(0.15),
+                                ),
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(16),
-                                borderSide: BorderSide(color: Colors.white.withOpacity(0.15)),
+                                borderSide: BorderSide(
+                                  color: Colors.white.withOpacity(0.15),
+                                ),
                               ),
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(16),
-                                borderSide: const BorderSide(color: Color(0xFF2DD4BF), width: 1.8),
+                                borderSide: const BorderSide(
+                                  color: Color(0xFF2DD4BF),
+                                  width: 1.8,
+                                ),
                               ),
                             ),
                             validator: (value) {
@@ -300,36 +340,44 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ),
                           const SizedBox(height: 32),
                           // Register button
-                          BlocBuilder<AuthBloc, AuthState>(
+                          BlocBuilder<AuthCubit, AuthState>(
                             builder: (context, state) {
                               final isLoading = state is AuthLoading;
                               return ElevatedButton(
-                                  onPressed: isLoading ? null : _onRegisterSubmitted,
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: const Color(0xFF2DD4BF),
-                                    foregroundColor: Colors.black,
-                                    padding: const EdgeInsets.symmetric(vertical: 16),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(16),
-                                    ),
-                                    elevation: 4,
+                                onPressed: isLoading
+                                    ? null
+                                    : _onRegisterSubmitted,
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(0xFF2DD4BF),
+                                  foregroundColor: Colors.black,
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 16,
                                   ),
-                                  child: isLoading
-                                      ? const SizedBox(
-                                          height: 20,
-                                          width: 20,
-                                          child: CircularProgressIndicator(
-                                            strokeWidth: 2.5,
-                                            valueColor: AlwaysStoppedAnimation<Color>(Colors.black),
-                                          ),
-                                        )
-                                      : Text(
-                                          tr('auth.register_btn'),
-                                          style: const TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ));
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
+                                  elevation: 4,
+                                ),
+                                child: isLoading
+                                    ? const SizedBox(
+                                        height: 20,
+                                        width: 20,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2.5,
+                                          valueColor:
+                                              AlwaysStoppedAnimation<Color>(
+                                                Colors.black,
+                                              ),
+                                        ),
+                                      )
+                                    : Text(
+                                        tr('auth.register_btn'),
+                                        style: const TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                              );
                             },
                           ),
                           const SizedBox(height: 20),
@@ -339,18 +387,24 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             children: [
                               Text(
                                 tr('auth.already_have_account'),
-                                style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 13),
+                                style: TextStyle(
+                                  color: Colors.white.withOpacity(0.6),
+                                  fontSize: 13,
+                                ),
                               ),
                               TextButton(
                                 onPressed: () {
-                                  Navigator.of(context).pop();
+                                  context.pop();
                                 },
                                 style: TextButton.styleFrom(
                                   foregroundColor: const Color(0xFF2DD4BF),
                                 ),
                                 child: Text(
                                   tr('auth.login_btn'),
-                                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 13,
+                                  ),
                                 ),
                               ),
                             ],

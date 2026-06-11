@@ -4,8 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:authproject/injection_container.dart' as di;
 import 'package:authproject/features/onboarding/presentation/screens/onboarding_screen.dart';
-import '../bloc/auth_bloc.dart';
-import '../bloc/auth_event.dart';
+import '../bloc/auth_cubit.dart';
 import '../bloc/auth_state.dart';
 import 'home_screen.dart';
 import 'login_screen.dart';
@@ -21,13 +20,13 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    // Dispatch AppStarted to check initial token state
-    context.read<AuthBloc>().add(AppStarted());
+    // Dispatch appStarted to check initial token state
+    context.read<AuthCubit>().appStarted();
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<AuthBloc, AuthState>(
+    return BlocListener<AuthCubit, AuthState>(
       listener: (context, state) {
         if (state is Authenticated) {
           Navigator.of(context).pushReplacement(
