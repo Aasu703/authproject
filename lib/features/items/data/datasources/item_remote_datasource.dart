@@ -1,4 +1,5 @@
 import 'package:authproject/features/items/data/models/item_model.dart';
+import 'package:authproject/graphql/queries.graphql.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 
 abstract class ItemRemoteDataSource {
@@ -42,43 +43,41 @@ class ItemRemoteDataSourceImpl implements ItemRemoteDataSource {
 
   @override
   Future<ProductConnectionModel> getProducts({int? first, String? after}) async {
-    const String query = r'''
-      query GetAllProducts($first: Int, $after: String) {
-        allProducts(first: $first, after: $after) {
-          pageInfo {
-            hasNextPage
-            endCursor
-          }
-          nodes {
-            id
-            name
-            description
-            price
-            stock
-            category
-            createdAt
-          }
-        }
-      }
-    ''';
-
-    final options = QueryOptions(
-      document: gql(query),
-      variables: {
-        'first': first,
-        'after': after,
-      },
-      fetchPolicy: FetchPolicy.networkOnly,
+    final result = await client.query$GetAllProducts(
+      Options$Query$GetAllProducts(
+        variables: Variables$Query$GetAllProducts(
+          first: first,
+          after: after,
+        ),
+        fetchPolicy: FetchPolicy.networkOnly,
+      ),
     );
-
-    final result = await client.query(options);
 
     if (result.hasException) {
       throw result.exception!;
     }
 
-    return ProductConnectionModel.fromJson(
-      result.data!['allProducts'] as Map<String, dynamic>,
+    final data = result.parsedData?.allProducts;
+    if (data == null) {
+      throw Exception('Empty response returned from allProducts');
+    }
+
+    return ProductConnectionModel(
+      products: data.nodes
+          .map((node) => ProductModel(
+                id: node.id,
+                name: node.name,
+                description: node.description,
+                price: node.price,
+                stock: node.stock,
+                category: node.category,
+                createdAt: node.createdAt,
+              ))
+          .toList(),
+      pageInfo: PageInfoModel(
+        hasNextPage: data.pageInfo.hasNextPage,
+        endCursor: data.pageInfo.endCursor,
+      ),
     );
   }
 }

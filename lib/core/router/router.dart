@@ -50,10 +50,7 @@ class AppRouter {
         path: '/register',
         builder: (context, state) => const RegisterScreen(),
       ),
-      GoRoute(
-        path: '/home',
-        builder: (context, state) => const HomeScreen(),
-      ),
+      GoRoute(path: '/home', builder: (context, state) => const HomeScreen()),
       GoRoute(
         path: '/items',
         builder: (context, state) => BlocProvider(

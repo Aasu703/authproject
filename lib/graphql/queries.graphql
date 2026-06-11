@@ -1,0 +1,47 @@
+query GetAllProducts($first: Int, $after: String) {
+  allProducts(first: $first, after: $after) {
+    nodes {
+      id
+      name
+      description
+      price
+      stock
+      category
+      createdAt
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+
+mutation Login($email: String!, $password: String!) {
+  login(email: $email, passwordPlain: $password) {
+    token
+    user {
+      id
+      email
+      name
+    }
+  }
+}
+
+mutation Register($email: String!, $passwordPlain: String!) {
+  register(email: $email, passwordPlain: $passwordPlain) {
+    token
+    user {
+      id
+      email
+      name
+    }
+  }
+}
+
+query Me {
+  me {
+    id
+    email
+    name
+  }
+}

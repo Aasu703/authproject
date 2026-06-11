@@ -1,0 +1,85 @@
+type User {
+  id: ID!
+  email: String!
+  name: String
+}
+
+scalar ID
+
+scalar String
+
+type AuthPayload {
+  token: String!
+  user: User!
+}
+
+type Product {
+  id: ID!
+  name: String!
+  description: String!
+  price: Float!
+  stock: Int!
+  category: String!
+  createdAt: String!
+  title: String
+}
+
+scalar Float
+
+scalar Int
+
+input ProductFilterInput {
+  category: String
+  minPrice: Float
+  maxPrice: Float
+}
+
+type PageInfo {
+  hasNextPage: Boolean!
+  endCursor: String
+}
+
+scalar Boolean
+
+type CartItem {
+  product: Product!
+  quantity: Int!
+}
+
+type Cart {
+  id: ID!
+  userId: ID!
+  items: [CartItem!]!
+  totalPrice: Float!
+}
+
+type ProductConnection {
+  pageInfo: PageInfo!
+  edges: [ProductEdge!]!
+  nodes: [Product!]!
+}
+
+type ProductEdge {
+  cursor: String!
+  node: Product!
+}
+
+type Query {
+  me: User
+  products(filter: ProductFilterInput): [Product!]!
+  product(id: ID!): Product!
+  users: [User!]!
+  user(id: ID!): User
+  allProducts(first: Int, after: String): ProductConnection!
+  cart(userId: ID!): Cart
+}
+
+type Mutation {
+  register(email: String!, passwordPlain: String!): AuthPayload!
+  login(email: String!, passwordPlain: String!): AuthPayload!
+}
+
+schema {
+  query: Query
+  mutation: Mutation
+}

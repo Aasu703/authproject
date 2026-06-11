@@ -1,6 +1,7 @@
 // lib/features/auth/data/datasources/auth_remote_datasource.dart
 import 'package:authproject/features/auth/data/models/auth_payload_model.dart';
 import 'package:authproject/features/auth/data/models/user_model.dart';
+import 'package:authproject/graphql/queries.graphql.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 
 abstract class AuthRemoteDataSource {
@@ -22,55 +23,35 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
   AuthRemoteDataSourceImpl(this.client);
 
-  static const String loginMutation = r'''
-    mutation Login($email: String!, $passwordPlain: String!) {
-      login(email: $email, passwordPlain: $passwordPlain) {
-        token
-        user {
-          id
-          email
-        }
-      }
-    }
-  ''';
-
-  static const String registerMutation = r'''
-    mutation Register($email: String!, $passwordPlain: String!) {
-      register(email: $email, passwordPlain: $passwordPlain) {
-        token
-        user {
-          id
-          email
-        }
-      }
-    }
-  ''';
-
-  static const String meQuery = r'''
-    query Me {
-      me {
-        id
-        email
-      }
-    }
-  ''';
-
   @override
   Future<AuthPayloadModel> login({
     required String email,
     required String passwordPlain,
   }) async {
-    final result = await client.mutate(
-      MutationOptions(
-        document: gql(loginMutation),
-        variables: <String, dynamic>{
-          'email': email,
-          'passwordPlain': passwordPlain,
-        },
+    final result = await client.mutate$Login(
+      Options$Mutation$Login(
+        variables: Variables$Mutation$Login(
+          email: email,
+          password: passwordPlain,
+        ),
       ),
     );
 
-    return _parseAuthPayload(result, 'login');
+    if (result.hasException) {
+      throw Exception(
+        _resolveErrorMessage(result.exception, 'Unable to login'),
+      );
+    }
+
+    final data = result.parsedData?.login;
+    if (data == null) {
+      throw Exception('Empty response returned from login');
+    }
+
+    return AuthPayloadModel(
+      token: data.token,
+      user: UserModel(id: data.user.id, email: data.user.email),
+    );
   }
 
   @override
@@ -78,26 +59,36 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     required String email,
     required String passwordPlain,
   }) async {
-    final result = await client.mutate(
-      MutationOptions(
-        document: gql(registerMutation),
-        variables: <String, dynamic>{
-          'email': email,
-          'passwordPlain': passwordPlain,
-        },
+    final result = await client.mutate$Register(
+      Options$Mutation$Register(
+        variables: Variables$Mutation$Register(
+          email: email,
+          passwordPlain: passwordPlain,
+        ),
       ),
     );
 
-    return _parseAuthPayload(result, 'register');
+    if (result.hasException) {
+      throw Exception(
+        _resolveErrorMessage(result.exception, 'Unable to register'),
+      );
+    }
+
+    final data = result.parsedData?.register;
+    if (data == null) {
+      throw Exception('Empty response returned from register');
+    }
+
+    return AuthPayloadModel(
+      token: data.token,
+      user: UserModel(id: data.user.id, email: data.user.email),
+    );
   }
 
   @override
   Future<UserModel> getMe() async {
-    final result = await client.query(
-      QueryOptions(
-        document: gql(meQuery),
-        fetchPolicy: FetchPolicy.networkOnly,
-      ),
+    final result = await client.query$Me(
+      Options$Query$Me(fetchPolicy: FetchPolicy.networkOnly),
     );
 
     if (result.hasException) {
@@ -106,29 +97,12 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       );
     }
 
-    final meJson = result.data?['me'];
-    if (meJson == null) {
+    final me = result.parsedData?.me;
+    if (me == null) {
       throw Exception('User profile is not available');
     }
 
-    return UserModel.fromJson(Map<String, dynamic>.from(meJson as Map));
-  }
-
-  AuthPayloadModel _parseAuthPayload(QueryResult result, String actionName) {
-    if (result.hasException) {
-      throw Exception(
-        _resolveErrorMessage(result.exception, 'Unable to $actionName'),
-      );
-    }
-
-    final payloadJson = result.data?[actionName];
-    if (payloadJson == null) {
-      throw Exception('Empty response returned from $actionName');
-    }
-
-    return AuthPayloadModel.fromJson(
-      Map<String, dynamic>.from(payloadJson as Map),
-    );
+    return UserModel(id: me.id, email: me.email);
   }
 
   String _resolveErrorMessage(
