@@ -1,7 +1,7 @@
 import 'package:authproject/features/items/domain/entities/item.dart';
 
-class ProductModel extends Product {
-  const ProductModel({
+class ItemModel extends Item {
+  const ItemModel({
     required super.id,
     required super.name,
     required super.description,
@@ -11,8 +11,8 @@ class ProductModel extends Product {
     required super.createdAt,
   });
 
-  factory ProductModel.fromJson(Map<String, dynamic> json) {
-    return ProductModel(
+  factory ItemModel.fromJson(Map<String, dynamic> json) {
+    return ItemModel(
       id: json['id'] as String,
       name: json['name'] as String,
       description: json['description'] as String,

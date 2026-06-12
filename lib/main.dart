@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:authproject/core/router/router.dart';
-import 'package:authproject/features/dio_error/presentation/bloc/dio_error_bloc.dart';
+
 import 'features/auth/presentation/bloc/auth_cubit.dart';
 import 'injection_container.dart' as di;
 import 'core/constants/app_constants.dart';
@@ -36,10 +36,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
-      providers: [
-        BlocProvider<AuthCubit>(create: (_) => di.sl<AuthCubit>()),
-        BlocProvider<DioErrorBloc>(create: (_) => di.sl<DioErrorBloc>()),
-      ],
+      providers: [BlocProvider<AuthCubit>(create: (_) => di.sl<AuthCubit>())],
       child: MaterialApp.router(
         debugShowCheckedModeBanner: false,
         title: 'Auth Project',

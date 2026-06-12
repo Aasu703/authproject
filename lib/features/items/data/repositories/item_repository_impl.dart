@@ -9,18 +9,18 @@ class ItemRepositoryImpl implements ItemRepository {
   ItemRepositoryImpl({required this.remoteDataSource});
 
   @override
-  Future<Either<Failure, ProductConnection>> getProducts({
+  Future<Either<Failure, ItemConnection>> getItems({
     int? first,
     String? after,
   }) async {
     try {
-      final remoteData = await remoteDataSource.getProducts(
+      final remoteData = await remoteDataSource.getItems(
         first: first,
         after: after,
       );
       
-      return Right(ProductConnection(
-        products: remoteData.products,
+      return Right(ItemConnection(
+        items: remoteData.items,
         pageInfo: PageInfo(
           hasNextPage: remoteData.pageInfo.hasNextPage,
           endCursor: remoteData.pageInfo.endCursor,

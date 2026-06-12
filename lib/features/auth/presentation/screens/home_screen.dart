@@ -6,9 +6,6 @@ import 'package:dio/dio.dart';
 import 'package:go_router/go_router.dart';
 import 'package:authproject/injection_container.dart' as di;
 import 'package:authproject/core/network/dio_client.dart';
-import 'package:authproject/features/dio_error/presentation/widgets/dio_error_notification_badge.dart';
-import 'package:authproject/features/dio_error/presentation/bloc/dio_error_bloc.dart';
-import 'package:authproject/features/dio_error/presentation/bloc/dio_error_event.dart';
 import '../bloc/auth_cubit.dart';
 import '../bloc/auth_state.dart';
 
@@ -190,9 +187,9 @@ class HomeScreen extends StatelessWidget {
 
                   if (state is Authenticated) {
                     final user = state.user;
-                    final initial = user.email.isNotEmpty
-                        ? user.email[0].toUpperCase()
-                        : '?';
+                    // final initial = user.email.isNotEmpty
+                    //     ? user.email[0].toUpperCase()
+                    //     : '?';
 
                     return SingleChildScrollView(
                       padding: const EdgeInsets.all(24.0),
@@ -230,16 +227,16 @@ class HomeScreen extends StatelessWidget {
                                     ),
                                   ),
                                   child: Center(
-                                    child: Text(
-                                      initial,
-                                      style: const TextStyle(
-                                        fontSize: 32,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white,
-                                      ),
-                                    ),
+                                    // child: Text(
+                                    //   initial,
+                                    //   style: const TextStyle(
+                                    //     fontSize: 32,
+                                    //     fontWeight: FontWeight.bold,
+                                    //     color: Colors.white,
+                                    //   ),
                                   ),
                                 ),
+                                // ),
                                 const SizedBox(height: 16),
                                 Text(
                                   tr('dashboard.welcome_back'),
@@ -250,14 +247,14 @@ class HomeScreen extends StatelessWidget {
                                   ),
                                 ),
                                 const SizedBox(height: 6),
-                                Text(
-                                  user.email,
-                                  style: const TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                  ),
-                                ),
+                                // Text(
+                                //   user.email,
+                                //   style: const TextStyle(
+                                //     fontSize: 20,
+                                //     fontWeight: FontWeight.bold,
+                                //     color: Colors.white,
+                                //   ),
+                                // ),
                                 const SizedBox(height: 20),
                                 const Divider(color: Colors.white10),
                                 const SizedBox(height: 16),
@@ -297,131 +294,6 @@ class HomeScreen extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(height: 24),
-
-                          // Dio Error Simulator Panel
-                          Container(
-                            padding: const EdgeInsets.all(20),
-                            decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.04),
-                              borderRadius: BorderRadius.circular(24),
-                              border: Border.all(
-                                color: Colors.white.withOpacity(0.08),
-                                width: 1.5,
-                              ),
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [
-                                Row(
-                                  children: [
-                                    const Icon(
-                                      Icons.network_check_rounded,
-                                      color: Color(0xFF2DD4BF),
-                                    ),
-                                    const SizedBox(width: 8),
-                                    Text(
-                                      tr('dio_error.simulator_title'),
-                                      style: const TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 12),
-                                Text(
-                                  tr('dio_error.simulator_desc'),
-                                  style: TextStyle(
-                                    fontSize: 13,
-                                    color: Colors.white.withOpacity(0.6),
-                                    height: 1.4,
-                                  ),
-                                ),
-                                const SizedBox(height: 20),
-
-                                // Error generation triggers
-                                ElevatedButton.icon(
-                                  onPressed: () => _triggerTimeout(context),
-                                  icon: const Icon(Icons.timer_off_outlined),
-                                  label: Text(tr('dio_error.trigger_timeout')),
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.white.withOpacity(
-                                      0.06,
-                                    ),
-                                    foregroundColor: Colors.white,
-                                    elevation: 0,
-                                    padding: const EdgeInsets.symmetric(
-                                      vertical: 14,
-                                    ),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                      side: const BorderSide(
-                                        color: Colors.white12,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(height: 12),
-                                ElevatedButton.icon(
-                                  onPressed: () => _trigger404(context),
-                                  icon: const Icon(Icons.link_off_rounded),
-                                  label: Text(tr('dio_error.trigger_404')),
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.white.withOpacity(
-                                      0.06,
-                                    ),
-                                    foregroundColor: Colors.white,
-                                    elevation: 0,
-                                    padding: const EdgeInsets.symmetric(
-                                      vertical: 14,
-                                    ),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                      side: const BorderSide(
-                                        color: Colors.white12,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(height: 12),
-                                ElevatedButton.icon(
-                                  onPressed: () => _trigger500(context),
-                                  icon: const Icon(Icons.cloud_off_rounded),
-                                  label: Text(tr('dio_error.trigger_500')),
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.white.withOpacity(
-                                      0.06,
-                                    ),
-                                    foregroundColor: Colors.white,
-                                    elevation: 0,
-                                    padding: const EdgeInsets.symmetric(
-                                      vertical: 14,
-                                    ),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                      side: const BorderSide(
-                                        color: Colors.white12,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(height: 16),
-                                // Clear logs button
-                                TextButton.icon(
-                                  onPressed: () => context
-                                      .read<DioErrorBloc>()
-                                      .add(ClearDioErrors()),
-                                  icon: const Icon(Icons.clear_all_rounded),
-                                  label: Text(tr('dio_error.clear_errors')),
-                                  style: TextButton.styleFrom(
-                                    foregroundColor: const Color(0xFF94A3B8),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(height: 48),
                         ],
                       ),
                     );
@@ -436,8 +308,8 @@ class HomeScreen extends StatelessWidget {
                 },
               ),
             ),
+
             // Floating Dio Error badge
-            const DioErrorNotificationBadge(),
           ],
         ),
       ),

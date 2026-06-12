@@ -4,14 +4,14 @@ import 'package:authproject/features/items/domain/repositories/item_repository.d
 import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 
-class GetItemsUseCase implements UseCase<Either<Failure, ProductConnection>, GetItemsParams> {
+class GetItemsUseCase implements UseCase<Either<Failure, ItemConnection>, GetItemsParams> {
   final ItemRepository repository;
 
   GetItemsUseCase(this.repository);
 
   @override
-  Future<Either<Failure, ProductConnection>> call(GetItemsParams params) async {
-    return await repository.getProducts(first: params.first, after: params.after);
+  Future<Either<Failure, ItemConnection>> call(GetItemsParams params) async {
+    return await repository.getItems(first: params.first, after: params.after);
   }
 }
 

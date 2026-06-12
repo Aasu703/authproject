@@ -4,20 +4,20 @@ import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 
 abstract class ItemRepository {
-  Future<Either<Failure, ProductConnection>> getProducts({
+  Future<Either<Failure, ItemConnection>> getItems({
     int? first,
     String? after,
   });
 }
 
-class ProductConnection extends Equatable {
-  final List<Product> products;
+class ItemConnection extends Equatable {
+  final List<Item> items;
   final PageInfo pageInfo;
 
-  const ProductConnection({required this.products, required this.pageInfo});
+  const ItemConnection({required this.items, required this.pageInfo});
 
   @override
-  List<Object?> get props => [products, pageInfo];
+  List<Object?> get props => [items, pageInfo];
 }
 
 class PageInfo extends Equatable {

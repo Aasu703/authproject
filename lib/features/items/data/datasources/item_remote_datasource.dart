@@ -3,19 +3,19 @@ import 'package:authproject/graphql/queries.graphql.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 
 abstract class ItemRemoteDataSource {
-  Future<ProductConnectionModel> getProducts({int? first, String? after});
+  Future<ItemConnectionModel> getItems({int? first, String? after});
 }
 
-class ProductConnectionModel {
-  final List<ProductModel> products;
+class ItemConnectionModel {
+  final List<ItemModel> items;
   final PageInfoModel pageInfo;
 
-  ProductConnectionModel({required this.products, required this.pageInfo});
+  ItemConnectionModel({required this.items, required this.pageInfo});
 
-  factory ProductConnectionModel.fromJson(Map<String, dynamic> json) {
-    return ProductConnectionModel(
-      products: (json['nodes'] as List)
-          .map((item) => ProductModel.fromJson(item as Map<String, dynamic>))
+  factory ItemConnectionModel.fromJson(Map<String, dynamic> json) {
+    return ItemConnectionModel(
+      items: (json['nodes'] as List)
+          .map((item) => ItemModel.fromJson(item as Map<String, dynamic>))
           .toList(),
       pageInfo: PageInfoModel.fromJson(json['pageInfo'] as Map<String, dynamic>),
     );
@@ -42,7 +42,7 @@ class ItemRemoteDataSourceImpl implements ItemRemoteDataSource {
   ItemRemoteDataSourceImpl({required this.client});
 
   @override
-  Future<ProductConnectionModel> getProducts({int? first, String? after}) async {
+  Future<ItemConnectionModel> getItems({int? first, String? after}) async {
     final result = await client.query$GetAllProducts(
       Options$Query$GetAllProducts(
         variables: Variables$Query$GetAllProducts(
@@ -62,9 +62,9 @@ class ItemRemoteDataSourceImpl implements ItemRemoteDataSource {
       throw Exception('Empty response returned from allProducts');
     }
 
-    return ProductConnectionModel(
-      products: data.nodes
-          .map((node) => ProductModel(
+    return ItemConnectionModel(
+      items: data.nodes
+          .map((node) => ItemModel(
                 id: node.id,
                 name: node.name,
                 description: node.description,

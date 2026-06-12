@@ -1,3 +1,5 @@
+import 'package:authproject/features/items/presentation/bloc/item_event.dart';
+import 'package:authproject/features/items/presentation/bloc/item_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:authproject/features/items/presentation/bloc/item_bloc.dart';
@@ -41,10 +43,7 @@ class _ItemListScreenState extends State<ItemListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Paginated Products'),
-        centerTitle: true,
-      ),
+      appBar: AppBar(title: const Text('Paginated Items'), centerTitle: true),
       body: BlocConsumer<ItemBloc, ItemState>(
         listener: (context, state) {
           if (state.errorMessage != null && state.items.isNotEmpty) {
@@ -55,9 +54,17 @@ class _ItemListScreenState extends State<ItemListScreen> {
         },
         builder: (context, state) {
           switch (state.status) {
-            case ItemStatus.failure:
-              return const Center(child: Text('failed to fetch items'));
+            case ItemStatus.initial:
+            case ItemStatus.loading: // FIX: Added loading status support
+              // If we already have items loaded, keep showing the list (the infinite scroll loader handles the bottom spinner)
+              // Otherwise, show a fullscreen spinner for the initial page load.
+              if (state.items.isEmpty) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              // Fallthrough to success rendering strategy to keep existing view state visible
+              continue successCase;
 
+            successCase:
             case ItemStatus.success:
               if (state.items.isEmpty) {
                 return const Center(child: Text('no items'));
@@ -68,7 +75,7 @@ class _ItemListScreenState extends State<ItemListScreen> {
                     ? state.items.length
                     : state.items.length + 1,
                 itemBuilder: (BuildContext context, int index) {
-                  // ✅ Safely render the BottomLoader spinner at the end of the list
+                  // Safely render the BottomLoader spinner at the end of the list
                   if (index >= state.items.length) {
                     return const BottomLoader();
                   }
@@ -76,8 +83,12 @@ class _ItemListScreenState extends State<ItemListScreen> {
                 },
               );
 
-            case ItemStatus.initial:
-              return const Center(child: CircularProgressIndicator());
+            case ItemStatus.failure:
+              if (state.items.isEmpty) {
+                return const Center(child: Text('failed to fetch items'));
+              }
+              // If there are existing items, re-route to show the active items list with the error handled by the SnackBar listener
+              continue successCase;
           }
         },
       ),
@@ -88,7 +99,7 @@ class _ItemListScreenState extends State<ItemListScreen> {
 class ItemListItem extends StatelessWidget {
   const ItemListItem({required this.item, super.key});
 
-  final Product item;
+  final Item item;
 
   @override
   Widget build(BuildContext context) {
@@ -99,7 +110,7 @@ class ItemListItem extends StatelessWidget {
       child: ListTile(
         leading: CircleAvatar(
           backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-          child: Text('${item.id}'),
+          child: Text(item.id),
         ),
         title: Text(
           item.name,
