@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
 import '../../../../core/widgets/auth_background.dart';
 import '../../../../core/widgets/custom_button.dart';
@@ -90,148 +91,162 @@ class _RegisterScreenState extends State<RegisterScreen> {
             child: Center(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                child: Container(
-                  padding: const EdgeInsets.all(24),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.04),
-                    borderRadius: BorderRadius.circular(28),
-                    border: Border.all(
-                      color: Colors.white.withOpacity(0.1),
-                      width: 1.5,
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.25),
-                        blurRadius: 30,
-                        offset: const Offset(0, 10),
+                child: AnimationConfiguration.synchronized(
+                  child: FadeInAnimation(
+                    duration: const Duration(milliseconds: 600),
+                    child: Container(
+                      padding: const EdgeInsets.all(28),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.04),
+                        borderRadius: BorderRadius.circular(32),
+                        border: Border.all(
+                          color: Colors.white.withOpacity(0.1),
+                          width: 1.5,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.3),
+                            blurRadius: 40,
+                            offset: const Offset(0, 15),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        AuthHeader(
-                          icon: Icons.person_add_rounded,
-                          title: tr('auth.create_account'),
-                          subtitle: tr('auth.signup_to_get_started'),
-                        ),
-                        const SizedBox(height: 32),
-                        CustomTextField(
-                          controller: _emailController,
-                          label: tr('auth.email_label'),
-                          prefixIcon: Icons.email_outlined,
-                          keyboardType: TextInputType.emailAddress,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return tr('auth.errors.please_enter_email');
-                            }
-                            if (!RegExp(
-                              r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
-                            ).hasMatch(value)) {
-                              return tr('auth.errors.please_enter_valid_email');
-                            }
-                            return null;
-                          },
-                        ),
-                        const SizedBox(height: 20),
-                        CustomTextField(
-                          controller: _passwordController,
-                          label: tr('auth.password_label'),
-                          prefixIcon: Icons.lock_outlined,
-                          obscureText: _obscurePassword,
-                          suffixIcon: IconButton(
-                            icon: Icon(
-                              _obscurePassword
-                                  ? Icons.visibility_outlined
-                                  : Icons.visibility_off_outlined,
-                              color: Colors.white70,
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                _obscurePassword = !_obscurePassword;
-                              });
-                            },
-                          ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return tr('auth.errors.please_enter_password');
-                            }
-                            if (value.length < 6) {
-                              return tr('auth.errors.password_too_short');
-                            }
-                            return null;
-                          },
-                        ),
-                        const SizedBox(height: 20),
-                        CustomTextField(
-                          controller: _confirmPasswordController,
-                          label: tr('auth.confirm_password_label'),
-                          prefixIcon: Icons.lock_outline_rounded,
-                          obscureText: _obscureConfirmPassword,
-                          suffixIcon: IconButton(
-                            icon: Icon(
-                              _obscureConfirmPassword
-                                  ? Icons.visibility_outlined
-                                  : Icons.visibility_off_outlined,
-                              color: Colors.white70,
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                _obscureConfirmPassword =
-                                    !_obscureConfirmPassword;
-                              });
-                            },
-                          ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return tr('auth.errors.confirm_password_empty');
-                            }
-                            if (value != _passwordController.text) {
-                              return tr('auth.errors.passwords_dont_match');
-                            }
-                            return null;
-                          },
-                        ),
-                        const SizedBox(height: 32),
-                        BlocBuilder<AuthCubit, AuthState>(
-                          builder: (context, state) {
-                            return CustomButton(
-                              text: tr('auth.register_btn'),
-                              isLoading: state is AuthLoading,
-                              onPressed: _onRegisterSubmitted,
-                            );
-                          },
-                        ),
-                        const SizedBox(height: 20),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              tr('auth.already_have_account'),
-                              style: TextStyle(
-                                color: Colors.white.withOpacity(0.6),
-                                fontSize: 13,
+                      child: Form(
+                        key: _formKey,
+                        child: AnimationLimiter(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: AnimationConfiguration.toStaggeredList(
+                              duration: const Duration(milliseconds: 400),
+                              childAnimationBuilder: (widget) => SlideAnimation(
+                                verticalOffset: 50.0,
+                                child: FadeInAnimation(child: widget),
                               ),
-                            ),
-                            TextButton(
-                              onPressed: () => context.pop(),
-                              style: TextButton.styleFrom(
-                                foregroundColor: const Color(0xFF2DD4BF),
-                              ),
-                              child: Text(
-                                tr('auth.login_btn'),
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 13,
+                              children: [
+                                AuthHeader(
+                                  icon: Icons.person_add_rounded,
+                                  title: tr('auth.create_account'),
+                                  subtitle: tr('auth.signup_to_get_started'),
                                 ),
-                              ),
+                                const SizedBox(height: 32),
+                                CustomTextField(
+                                  controller: _emailController,
+                                  label: tr('auth.email_label'),
+                                  prefixIcon: Icons.email_outlined,
+                                  keyboardType: TextInputType.emailAddress,
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return tr('auth.errors.please_enter_email');
+                                    }
+                                    if (!RegExp(
+                                      r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                                    ).hasMatch(value)) {
+                                      return tr('auth.errors.please_enter_valid_email');
+                                    }
+                                    return null;
+                                  },
+                                ),
+                                const SizedBox(height: 20),
+                                CustomTextField(
+                                  controller: _passwordController,
+                                  label: tr('auth.password_label'),
+                                  prefixIcon: Icons.lock_outlined,
+                                  obscureText: _obscurePassword,
+                                  suffixIcon: IconButton(
+                                    icon: Icon(
+                                      _obscurePassword
+                                          ? Icons.visibility_outlined
+                                          : Icons.visibility_off_outlined,
+                                      color: Colors.white70,
+                                    ),
+                                    onPressed: () {
+                                      setState(() {
+                                        _obscurePassword = !_obscurePassword;
+                                      });
+                                    },
+                                  ),
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return tr('auth.errors.please_enter_password');
+                                    }
+                                    if (value.length < 6) {
+                                      return tr('auth.errors.password_too_short');
+                                    }
+                                    return null;
+                                  },
+                                ),
+                                const SizedBox(height: 20),
+                                CustomTextField(
+                                  controller: _confirmPasswordController,
+                                  label: tr('auth.confirm_password_label'),
+                                  prefixIcon: Icons.lock_outline_rounded,
+                                  obscureText: _obscureConfirmPassword,
+                                  suffixIcon: IconButton(
+                                    icon: Icon(
+                                      _obscureConfirmPassword
+                                          ? Icons.visibility_outlined
+                                          : Icons.visibility_off_outlined,
+                                      color: Colors.white70,
+                                    ),
+                                    onPressed: () {
+                                      setState(() {
+                                        _obscureConfirmPassword =
+                                            !_obscureConfirmPassword;
+                                      });
+                                    },
+                                  ),
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return tr('auth.errors.confirm_password_empty');
+                                    }
+                                    if (value != _passwordController.text) {
+                                      return tr('auth.errors.passwords_dont_match');
+                                    }
+                                    return null;
+                                  },
+                                ),
+                                const SizedBox(height: 32),
+                                BlocBuilder<AuthCubit, AuthState>(
+                                  builder: (context, state) {
+                                    return CustomButton(
+                                      text: tr('auth.register_btn'),
+                                      isLoading: state is AuthLoading,
+                                      onPressed: _onRegisterSubmitted,
+                                    );
+                                  },
+                                ),
+                                const SizedBox(height: 24),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      tr('auth.already_have_account'),
+                                      style: TextStyle(
+                                        color: Colors.white.withOpacity(0.6),
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                    TextButton(
+                                      onPressed: () => context.pop(),
+                                      style: TextButton.styleFrom(
+                                        foregroundColor: const Color(0xFF2DD4BF),
+                                      ),
+                                      child: Text(
+                                        tr('auth.login_btn'),
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
                             ),
-                          ],
+                          ),
                         ),
-                      ],
+                      ),
                     ),
                   ),
                 ),

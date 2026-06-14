@@ -3,8 +3,10 @@ import 'package:authproject/features/items/presentation/bloc/item_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:authproject/features/items/presentation/bloc/item_bloc.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import '../widgets/item_list_item.dart';
 import '../widgets/bottom_loader.dart';
+import '../widgets/item_shimmer.dart';
 
 class ItemListScreen extends StatefulWidget {
   const ItemListScreen({super.key});
@@ -44,54 +46,105 @@ class _ItemListScreenState extends State<ItemListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Paginated Items'), centerTitle: true),
-      body: BlocConsumer<ItemBloc, ItemState>(
-        listener: (context, state) {
-          if (state.errorMessage != null && state.items.isNotEmpty) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(SnackBar(content: Text(state.errorMessage!)));
-          }
-        },
-        builder: (context, state) {
-          switch (state.status) {
-            case ItemStatus.initial:
-            case ItemStatus.loading: // FIX: Added loading status support
-              // If we already have items loaded, keep showing the list (the infinite scroll loader handles the bottom spinner)
-              // Otherwise, show a fullscreen spinner for the initial page load.
-              if (state.items.isEmpty) {
-                return const Center(child: CircularProgressIndicator());
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        title: const Text('Paginated Items'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Color(0xFF0F172A),
+              Color(0xFF1E293B),
+            ],
+          ),
+        ),
+        child: SafeArea(
+          child: BlocConsumer<ItemBloc, ItemState>(
+            listener: (context, state) {
+              if (state.errorMessage != null && state.items.isNotEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(state.errorMessage!),
+                    backgroundColor: const Color(0xFFEF4444),
+                    behavior: SnackBarBehavior.floating,
+                  ),
+                );
               }
-              // Fallthrough to success rendering strategy to keep existing view state visible
-              continue successCase;
-
-            successCase:
-            case ItemStatus.success:
-              if (state.items.isEmpty) {
-                return const Center(child: Text('no items'));
-              }
-              return ListView.builder(
-                controller: _scrollController,
-                itemCount: state.hasReachedMax
-                    ? state.items.length
-                    : state.items.length + 1,
-                itemBuilder: (BuildContext context, int index) {
-                  // Safely render the BottomLoader spinner at the end of the list
-                  if (index >= state.items.length) {
-                    return const BottomLoader();
+            },
+            builder: (context, state) {
+              switch (state.status) {
+                case ItemStatus.initial:
+                case ItemStatus.loading:
+                  if (state.items.isEmpty) {
+                    return const ItemShimmer();
                   }
-                  return ItemListItem(item: state.items[index]);
-                },
-              );
+                  continue successCase;
 
-            case ItemStatus.failure:
-              if (state.items.isEmpty) {
-                return const Center(child: Text('failed to fetch items'));
+                successCase:
+                case ItemStatus.success:
+                  if (state.items.isEmpty) {
+                    return const Center(
+                      child: Text(
+                        'No items found',
+                        style: TextStyle(color: Colors.white54),
+                      ),
+                    );
+                  }
+                  return AnimationLimiter(
+                    child: ListView.builder(
+                      controller: _scrollController,
+                      padding: const EdgeInsets.all(24),
+                      itemCount: state.hasReachedMax ? state.items.length : state.items.length + 1,
+                      itemBuilder: (BuildContext context, int index) {
+                        return AnimationConfiguration.staggeredList(
+                          position: index,
+                          duration: const Duration(milliseconds: 375),
+                          child: SlideAnimation(
+                            verticalOffset: 50.0,
+                            child: FadeInAnimation(
+                              child: index >= state.items.length
+                                  ? const BottomLoader()
+                                  : ItemListItem(item: state.items[index]),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  );
+
+                case ItemStatus.failure:
+                  if (state.items.isEmpty) {
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.error_outline_rounded, color: Color(0xFFEF4444), size: 48),
+                          const SizedBox(height: 16),
+                          const Text(
+                            'Failed to fetch items',
+                            style: TextStyle(color: Colors.white, fontSize: 16),
+                          ),
+                          const SizedBox(height: 8),
+                          ElevatedButton(
+                            onPressed: () => context.read<ItemBloc>().add(FetchItems()),
+                            child: const Text('Try Again'),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+                  continue successCase;
               }
-              // If there are existing items, re-route to show the active items list with the error handled by the SnackBar listener
-              continue successCase;
-          }
-        },
+            },
+          ),
+        ),
       ),
     );
   }
