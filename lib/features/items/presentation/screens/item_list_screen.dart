@@ -3,7 +3,8 @@ import 'package:authproject/features/items/presentation/bloc/item_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:authproject/features/items/presentation/bloc/item_bloc.dart';
-import 'package:authproject/features/items/domain/entities/item.dart';
+import '../widgets/item_list_item.dart';
+import '../widgets/bottom_loader.dart';
 
 class ItemListScreen extends StatefulWidget {
   const ItemListScreen({super.key});
@@ -91,55 +92,6 @@ class _ItemListScreenState extends State<ItemListScreen> {
               continue successCase;
           }
         },
-      ),
-    );
-  }
-}
-
-class ItemListItem extends StatelessWidget {
-  const ItemListItem({required this.item, super.key});
-
-  final Item item;
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: ListTile(
-        leading: CircleAvatar(
-          backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-          child: Text(item.id),
-        ),
-        title: Text(
-          item.name,
-          style: const TextStyle(fontWeight: FontWeight.bold),
-        ),
-        subtitle: Text(
-          item.description,
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
-        ),
-        isThreeLine: true,
-      ),
-    );
-  }
-}
-
-class BottomLoader extends StatelessWidget {
-  const BottomLoader({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Center(
-      child: Padding(
-        padding: EdgeInsets.symmetric(vertical: 24),
-        child: SizedBox(
-          height: 24,
-          width: 24,
-          child: CircularProgressIndicator(strokeWidth: 2),
-        ),
       ),
     );
   }

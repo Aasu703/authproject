@@ -17,7 +17,9 @@ class ItemConnectionModel {
       items: (json['nodes'] as List)
           .map((item) => ItemModel.fromJson(item as Map<String, dynamic>))
           .toList(),
-      pageInfo: PageInfoModel.fromJson(json['pageInfo'] as Map<String, dynamic>),
+      pageInfo: PageInfoModel.fromJson(
+        json['pageInfo'] as Map<String, dynamic>,
+      ),
     );
   }
 }
@@ -45,10 +47,7 @@ class ItemRemoteDataSourceImpl implements ItemRemoteDataSource {
   Future<ItemConnectionModel> getItems({int? first, String? after}) async {
     final result = await client.query$GetAllProducts(
       Options$Query$GetAllProducts(
-        variables: Variables$Query$GetAllProducts(
-          first: first,
-          after: after,
-        ),
+        variables: Variables$Query$GetAllProducts(first: first, after: after),
         fetchPolicy: FetchPolicy.networkOnly,
       ),
     );
@@ -64,15 +63,17 @@ class ItemRemoteDataSourceImpl implements ItemRemoteDataSource {
 
     return ItemConnectionModel(
       items: data.nodes
-          .map((node) => ItemModel(
-                id: node.id,
-                name: node.name,
-                description: node.description,
-                price: node.price,
-                stock: node.stock,
-                category: node.category,
-                createdAt: node.createdAt,
-              ))
+          .map(
+            (node) => ItemModel(
+              id: node.id,
+              name: node.name,
+              description: node.description,
+              price: node.price,
+              stock: node.stock,
+              category: node.category,
+              createdAt: node.createdAt,
+            ),
+          )
           .toList(),
       pageInfo: PageInfoModel(
         hasNextPage: data.pageInfo.hasNextPage,
