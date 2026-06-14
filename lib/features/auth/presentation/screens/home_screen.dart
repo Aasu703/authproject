@@ -8,6 +8,7 @@ import '../bloc/auth_cubit.dart';
 import '../bloc/auth_state.dart';
 import '../widgets/logout_dialog.dart';
 import '../widgets/user_profile_card.dart';
+import '../widgets/error_simulator_card.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -69,6 +70,8 @@ class HomeScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         UserProfileCard(user: state.user),
+                        const SizedBox(height: 24),
+                        const ErrorSimulatorCard(),
                         const SizedBox(height: 24),
                       ],
                     ),

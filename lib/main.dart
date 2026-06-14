@@ -1,4 +1,6 @@
 // lib/main.dart
+import 'package:authproject/core/bloc/dio_error/dio_error_bloc.dart';
+import 'package:authproject/core/widgets/dio_error_badge.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -36,7 +38,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
-      providers: [BlocProvider<AuthCubit>(create: (_) => di.sl<AuthCubit>())],
+      providers: [
+        BlocProvider<AuthCubit>(create: (_) => di.sl<AuthCubit>()),
+        BlocProvider<DioErrorBloc>(create: (_) => di.sl<DioErrorBloc>()),
+      ],
       child: MaterialApp.router(
         debugShowCheckedModeBanner: false,
         title: 'Auth Project',
@@ -49,6 +54,14 @@ class MyApp extends StatelessWidget {
           scaffoldBackgroundColor: const Color(0xFFF8FAFC),
         ),
         routerConfig: di.sl<AppRouter>().router,
+        builder: (context, child) {
+          return Stack(
+            children: [
+              if (child != null) child,
+              const DioErrorBadge(),
+            ],
+          );
+        },
       ),
     );
   }

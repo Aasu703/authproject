@@ -1,4 +1,6 @@
 // lib/injection_container.dart
+import 'package:authproject/core/bloc/dio_error/dio_error_bloc.dart';
+import 'package:authproject/core/network/dio_client.dart';
 import 'package:authproject/core/network/graphql_client_factory.dart';
 import 'package:authproject/core/router/router.dart';
 import 'package:authproject/core/services/token_service.dart';
@@ -24,6 +26,9 @@ final sl = GetIt.instance;
 Future<void> initDependencies() async {
   final sharedPreferences = await SharedPreferences.getInstance();
   sl.registerSingleton<SharedPreferences>(sharedPreferences);
+
+  sl.registerLazySingleton<DioErrorBloc>(() => DioErrorBloc());
+  sl.registerLazySingleton<DioClient>(() => DioClient(sl<DioErrorBloc>()));
 
   sl.registerLazySingleton<TokenService>(
     () => TokenService(sl<SharedPreferences>()),
